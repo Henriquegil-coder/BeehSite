@@ -58,7 +58,7 @@ figcaption{font-size:13.5px;color:#4d5a3a;margin-top:8px}
 .intro2 p{margin:0;max-width:62ch;font-size:18px}
 .zoom{position:fixed;inset:0;z-index:30;background:rgba(26,38,1,.82);display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
 .zoom img{width:auto;height:auto;max-width:calc(100vw - 48px);max-height:calc(100vh - 96px);max-height:calc(100dvh - 96px);object-fit:contain;border-radius:6px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
-.zoom .fechar{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--papel)}
+.zoom{transition:background .4s cubic-bezier(.22,.61,.36,1);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.zoom .fechar{color:var(--zfg,#EEEBE0)!important;position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--papel)}
 [hidden]{display:none!important}
 @media (max-width:820px){.intro2{grid-template-columns:1fr;gap:16px}}
 .mock{padding-block:56px 0}.mock h2{font:600 clamp(24px,3vw,32px)/1.2 var(--display);color:var(--verde);margin:0 0 8px}.mock p{margin:0 0 24px;color:#4d5a3a;max-width:60ch}.mock img{width:100%;display:block;border-radius:4px 4px 16px 16px}
@@ -145,7 +145,12 @@ document.getElementById('wa').href=url;document.getElementById('wa2').href=url;
 </script>
 <script>
 const z=document.getElementById('zoom'),zi=document.getElementById('zimg');let ori=null;
-document.querySelectorAll('.peca button').forEach(b=>b.addEventListener('click',()=>{ori=b;zi.src=b.dataset.src;zi.alt=b.querySelector('img').alt;z.hidden=false;document.getElementById('zfechar').focus()}));
+const tema=im=>{try{const c=document.createElement('canvas'),N=40;c.width=c.height=N;const g=c.getContext('2d');g.drawImage(im,0,0,N,N);const d=g.getImageData(0,0,N,N).data;let r=0,gg=0,bb=0,n=0;
+for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(x>3&&x<N-4&&y>3&&y<N-4)continue;const k=(y*N+x)*4;r+=d[k];gg+=d[k+1];bb+=d[k+2];n++}
+r/=n;gg/=n;bb/=n;const L=(.2126*r+.7152*gg+.0722*bb)/255;const f=L>.6?.92:.85;
+z.style.background=`rgba(${Math.round(r*f)},${Math.round(gg*f)},${Math.round(bb*f)},.97)`;z.style.setProperty('--zfg',L>.55?'#1A2601':'#EEEBE0')}catch(e){z.style.background=''}};
+
+document.querySelectorAll('.peca button').forEach(b=>b.addEventListener('click',()=>{ori=b;zi.src=b.dataset.src;zi.alt=b.querySelector('img').alt;tema(b.querySelector('img'));z.hidden=false;document.getElementById('zfechar').focus()}));
 const fz=()=>{z.hidden=true;ori&&ori.focus()};document.getElementById('zfechar').onclick=fz;z.addEventListener('click',e=>{if(e.target===z)fz()});addEventListener('keydown',e=>{if(e.key==='Escape'&&!z.hidden)fz()});
 </script>
 <script>
