@@ -12,7 +12,7 @@
 /* Layout: uma única tela. Fundo de mel líquido (WebGL) em ciclo de cores; logo grande ao centro; menu de vidro no topo; pausa e WhatsApp nos cantos inferiores. Visual único da marca (as cores vêm do ciclo). */
 :root{--papel:#EEEBE0;--tinta:#1A2601;--verde:#0C402D;--display:"Lora",Georgia,serif;--texto:"Karla",system-ui,sans-serif;--escorrer:cubic-bezier(.22,.61,.36,1);--ink:#1A2601;--bg:#DA9313;color-scheme:light}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 var(--texto);overflow:hidden;transition:background 4s ease,color 1.8s ease}
+body{margin:0;-webkit-tap-highlight-color:transparent;background:var(--bg);color:var(--ink);font:16px/1.4 var(--texto);overflow:hidden;transition:background 4s ease,color 1.8s ease}
 .tela{position:relative;height:100%;display:grid;grid-template-rows:auto 1fr auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s ease}
 .vidro{position:relative;isolation:isolate;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.02));-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);border:none;color:inherit;font:inherit;cursor:pointer;text-decoration:none;
@@ -45,6 +45,7 @@ footer .esq{grid-area:esq;display:flex;align-items:center}footer h1{grid-area:fr
 .painel ul{list-style:none;margin:0;padding:0;display:grid;gap:12px;justify-items:center}
 .painel .btn{font-size:20px;padding:14px 30px;min-width:220px;justify-content:center;font-family:var(--display);font-weight:600}
 .fechar{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:max(20px,env(safe-area-inset-right,0px));width:48px;height:48px;border-radius:50%;display:grid;place-items:center}
+@media (pointer:coarse){body{touch-action:none}}
 @media (max-width:820px){nav ul{display:none}.menu-btn{display:inline-flex}.cor{display:none}.wa span{display:none}.wa{padding:12px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
@@ -86,7 +87,7 @@ footer .esq{grid-area:esq;display:flex;align-items:center}footer h1{grid-area:fr
 <canvas id="mel" aria-hidden="true"></canvas>
 
 <script>
-const T={pt:{menu:'Menu',itens:['Portfólio','Metodologia','Beeh Design',   'O Designer','Publicações','Contato'],frase:'Identidade visual · ilustração · web design',pausar:'❚❚ Pausar cores',retomar:'▶ Retomar cores',wa:'Olá, Henrique! Vi seu site e quero conversar sobre um projeto.',cor:'Cor: '},
+const T={pt:{menu:'Menu',itens:['Portfólio','Metodologia','Beeh Design','O Designer','Publicações','Contato'],frase:'Identidade visual · ilustração · web design',pausar:'❚❚ Pausar cores',retomar:'▶ Retomar cores',wa:'Olá, Henrique! Vi seu site e quero conversar sobre um projeto.',cor:'Cor: '},
          en:{menu:'Menu',itens:['Portfolio','Method','Beeh Design','The Designer','Publications','Contact'],frase:'Visual identity · illustration · web design',pausar:'❚❚ Pause colors',retomar:'▶ Resume colors',wa:'Hi Henrique! I saw your website and would like to talk about a project.',cor:'Color: '}};
 const ANC=['portfolio','metodologia','projeto-beeh-design','sobre','publicacoes','contato'];
 const PAL=[['Mel','#DA9313'],['Âmbar','#D9843B'],['Laranja','#BF5D24'],['Marrom','#8C4F2B'],['Tinta','#1A2601'],['Verde','#0C402D'],['Verde-médio','#397348'],['Oliva','#9AA66D'],['Sálvia','#BBBF99'],['Papel','#EEEBE0']];
@@ -117,16 +118,17 @@ setInterval(()=>{if(document.hidden||pausado)return;cor=(cor+1)%PAL.length;aplic
 // mel líquido (WebGL)
 (function(){const cv=$('mel');if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 const gl=cv.getContext('webgl',{antialias:false,premultipliedAlpha:false});if(!gl)return;
+const MOB=matchMedia('(pointer: coarse)').matches;const Q=(pc,cel)=>MOB?cel:pc;
 const vs='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
 const fs = [
-      'precision mediump float;',
+      '#ifdef GL_FRAGMENT_PRECISION_HIGH','precision highp float;','#else','precision mediump float;','#endif',
       'uniform vec2 R;uniform float T;uniform vec2 M;uniform float E;uniform vec2 V;uniform vec4 P[16];uniform vec3 B;uniform vec3 KK;uniform float HL;',
       'float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
       'float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);',
       'return mix(mix(h21(i),h21(i+vec2(1.,0.)),u.x),mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),u.x),u.y);}',
       'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*n(p);p=p*2.02+vec2(1.7,9.2);a*=.5;}return s/.875;}',
       'float field(vec2 p){vec2 q=vec2(fbm(p*.6+vec2(0.,T*.015)),fbm(p*.6+vec2(5.2,1.3)-T*.012));return fbm(p*.7+1.2*q);}',
-      'float dm(vec2 q,vec2 c,float e){vec2 k=q-c;return -e*.22*exp(-dot(k,k)*7.);}',
+      'float dm(vec2 q,vec2 c,float e){vec2 k=q-c;return -e*'+Q('.22','.3')+'*exp(-dot(k,k)*'+Q('7.','4.')+');}',
       'vec4 bubp(vec2 w,float sc,vec2 off,float s,float k,float r0,float th,float sf){',
       ' vec2 g=w*sc+off;float spd=s*(.6+.8*h21(vec2(floor(g.x),k)));g.y-=T*spd;',
       ' vec2 id=floor(g);vec2 f=fract(g)-.5;',
@@ -149,9 +151,9 @@ const fs = [
       'void main(){',
       ' float asp=R.x/R.y;vec2 uv=gl_FragCoord.xy/R;',
       ' vec2 p=vec2(uv.x*asp,uv.y)*2.;vec2 mp=vec2(M.x*asp,M.y)*2.;',
-      ' vec2 d=p-mp;float infl=exp(-dot(d,d)*2.5)*E;',
-      ' float a=infl*.7;float c=cos(a),s=sin(a);',
-      ' vec2 w=mp+mat2(c,-s,s,c)*d-V*infl*.2;',
+      ' vec2 d=p-mp;float infl=exp(-dot(d,d)*'+Q('2.5','1.1')+')*E;',
+      ' float a=infl*'+Q('.7','1.3')+';float c=cos(a),s=sin(a);',
+      ' vec2 w=mp+mat2(c,-s,s,c)*d-V*infl*'+Q('.2','.45')+';',
       ' float e=.02;',
       ' float h=field(w)+dm(p,mp,E);',
       ' float hx=field(w+vec2(e,0.))+dm(p+vec2(e,0.),mp,E);',
@@ -161,10 +163,10 @@ const fs = [
       ' vec3 col=min(B*exp(-KK*th),vec3(1.));',
       ' col*=.985+.03*n(w*40.+vec2(T*.05,0.));',
       ' col=bl(col,bubp(w,60.,vec2(9.1,2.3),.3,1.,.08,.97,.03),.12,0.);',
-      ' col=bl(col,bubp(w,26.,vec2(1.3,7.7),.17,2.,.12,.9,.06),.3,.1);',
-      ' col=bl(col,bubp(w,16.,vec2(3.7,0.),.2,3.,.13,.88,.03),.55,.3);',
-      ' col=bl(col,bubp(w,9.,vec2(0.),.24,4.,.16,.86,.015),.8,.5);',
-      ' col=bl(col,bubp(w,6.,vec2(5.1,2.9),.28,6.,.14,.94,.012),.85,.55);',
+      ' col=bl(col,bubp(w,26.,vec2(1.3,7.7),.17,2.,.12,'+Q('.9,.06),.3,.1','.84,.06),.4,.15')+');',
+      ' col=bl(col,bubp(w,16.,vec2(3.7,0.),.2,3.,.13,'+Q('.88,.03),.55,.3','.8,.03),.7,.4')+');',
+      ' col=bl(col,bubp(w,9.,vec2(0.),.24,4.,.16,'+Q('.86,.015),.8,.5','.8,.015),.95,.6')+');',
+      ' col=bl(col,bubp(w,6.,vec2(5.1,2.9),.28,6.,.14,'+Q('.94,.012),.85,.55','.9,.012),1.,.65')+');',
       ' vec3 L=normalize(vec3(-.35,.55,1.));',
       ' col*=.95+.08*clamp(dot(nr,L),0.,1.);',
       ' col+=(h21(gl_FragCoord.xy+fract(T))-.5)/255.;',
@@ -180,12 +182,12 @@ const pops=new Float32Array(64);for(let i=0;i<16;i++)pops[i*4+2]=-1;let pi=0,las
 const st={tx:.5,ty:.5,mx:.5,my:.5,vx:0,vy:0,e:.12,t0:performance.now(),shown:false,cor:-1,B:[1,1,1],K:[0,0,0],tB:[1,1,1],tK:[0,0,0],hl:1};
 function resize(){const k=.5*Math.min(devicePixelRatio||1,2);cv.width=Math.max(1,Math.round(innerWidth*k));cv.height=Math.max(1,Math.round(innerHeight*k));gl.viewport(0,0,cv.width,cv.height)}resize();addEventListener('resize',resize);
 function addPop(x,y,r){const asp=innerWidth/innerHeight,j=pi*4;pops[j]=x/innerWidth*asp*2;pops[j+1]=(1-y/innerHeight)*2;pops[j+2]=(performance.now()-st.t0)/1000;pops[j+3]=r;pi=(pi+1)%16}
-addEventListener('pointermove',e=>{st.tx=e.clientX/innerWidth;st.ty=1-e.clientY/innerHeight;const now=performance.now();if(lastRaw){const dt=Math.max(1,now-lastRaw.t),sp=Math.hypot(e.clientX-lastRaw.x,e.clientY-lastRaw.y)/dt;if(sp>1.6&&now-lastFast>45){lastFast=now;addPop(e.clientX,e.clientY,.05)}}lastRaw={x:e.clientX,y:e.clientY,t:now}});
-addEventListener('pointerdown',e=>{if(e.target.closest('button,a'))return;addPop(e.clientX,e.clientY,.07)});
+let ultimo=-1e9;addEventListener('pointermove',e=>{ultimo=performance.now();st.tx=e.clientX/innerWidth;st.ty=1-e.clientY/innerHeight;const now=performance.now();if(lastRaw){const dt=Math.max(1,now-lastRaw.t),sp=Math.hypot(e.clientX-lastRaw.x,e.clientY-lastRaw.y)/dt;if(sp>Q(1.6,.7)&&now-lastFast>Q(45,60)){lastFast=now;addPop(e.clientX,e.clientY,.05)}}lastRaw={x:e.clientX,y:e.clientY,t:now}});
+addEventListener('pointerdown',e=>{if(MOB){ultimo=performance.now();st.tx=e.clientX/innerWidth;st.ty=1-e.clientY/innerHeight;st.e=Math.min(1,st.e+.35)}if(e.target.closest('button,a'))return;addPop(e.clientX,e.clientY,.07)});
 function frame(now){requestAnimationFrame(frame);if(document.hidden)return;
  if(st.cor!==cor){const inf=info(PAL[cor][1]);st.tB=inf.base;st.tK=inf.k;st.hl=inf.claro?.5:1;if(st.cor<0){st.B=inf.base.slice();st.K=inf.k.slice()}st.cor=cor}
  for(let i=0;i<3;i++){st.B[i]+=(st.tB[i]-st.B[i])*.02;st.K[i]+=(st.tK[i]-st.K[i])*.02}
- const px=st.mx,py=st.my;st.mx+=(st.tx-st.mx)*.03;st.my+=(st.ty-st.my)*.03;const dx=st.mx-px,dy=st.my-py;st.vx+=(dx*40-st.vx)*.1;st.vy+=(dy*40-st.vy)*.1;st.e=Math.max(.1,Math.min(.7,st.e*.98+Math.hypot(dx,dy)*3));
+ if(MOB&&now-ultimo>3500){const s=(now-st.t0)/1000;st.tx=.5+.32*Math.sin(s*.23);st.ty=.5+.28*Math.sin(s*.31+1.3)}const px=st.mx,py=st.my,ev=Q(.03,.06);st.mx+=(st.tx-st.mx)*ev;st.my+=(st.ty-st.my)*ev;const dx=st.mx-px,dy=st.my-py;st.vx+=(dx*40-st.vx)*.1;st.vy+=(dy*40-st.vy)*.1;st.e=MOB?Math.max(.22,Math.min(1,st.e*.975+Math.hypot(dx,dy)*6)):Math.max(.1,Math.min(.7,st.e*.98+Math.hypot(dx,dy)*3));
  gl.uniform2f(U.R,cv.width,cv.height);gl.uniform1f(U.T,(now-st.t0)/1000);gl.uniform2f(U.M,st.mx,st.my);gl.uniform1f(U.E,st.e);gl.uniform2f(U.V,st.vx,st.vy);gl.uniform4fv(U.P,pops);
  gl.uniform3f(U.B,...st.B);gl.uniform3f(U.KK,...st.K);gl.uniform1f(U.HL,st.hl);gl.drawArrays(gl.TRIANGLES,0,6);if(!st.shown){st.shown=true;cv.style.opacity='1'}}
 requestAnimationFrame(frame)})();
@@ -218,6 +220,5 @@ todos();new ResizeObserver(todos).observe(document.body);document.fonts&&documen
 })();
 </script>
 
-   <script src="js/topo.js"></script>
 </body>
 </html>
