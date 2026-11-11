@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://beehdesign.vercel.app/sitemap.xml
