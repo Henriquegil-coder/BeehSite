@@ -18,7 +18,7 @@ body{margin:0;background:var(--papel);color:var(--tinta);font:17px/1.6 var(--tex
 .vidro{position:relative;isolation:isolate;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.02));-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);border:none;color:inherit;font:inherit;cursor:pointer;text-decoration:none;
   box-shadow:0 1px 2px rgba(26,38,1,.06),0 6px 14px rgba(26,38,1,.06);transition:background .25s var(--escorrer),transform .3s var(--escorrer)}
 .vidro::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.7) 0%,rgba(255,255,255,.08) 45%,rgba(160,70,0,.08) 55%,rgba(160,70,0,.4) 100%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .vidro:hover{background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.06));transform:translateY(-1px)}
 .vidro:focus-visible,a:focus-visible{outline:2px solid var(--verde);outline-offset:3px}
 .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 20px;border-radius:999px;font-weight:700;font-size:15px;color:var(--verde)}
@@ -153,9 +153,9 @@ body{background:var(--papel)}
   </div>
 </div>
 <ul class="grade" id="grade">
-    <li class="card" data-cat="identidade web"><a class="vidro" style="--tom:#DA9313" href="projeto-beeh-design.html"><div class="img"><img src="img/beeh-capa.jpg" alt="" loading="lazy"></div><div><b>Beeh Design</b><span>Identidade visual · Web design</span></div></a></li>
-   <li class="card" data-cat="identidade web"><a class="vidro" style="--tom:#660033" href="projeto-gil-confeitaria.html"><div class="img" style="background:#321622"><img src="img/gil-capa.jpg" alt="" loading="lazy"></div><div><b>GiL Confeitaria</b><span>Identidade visual · Web design</span></div></a></li>
-    <li class="card" data-cat="identidade"><a class="vidro" style="--tom:#5f8fd0" href="projeto-anna-paula.html"><div class="img"><img src="img/anna-hero.jpg" alt="" loading="lazy"></div><div><b>Anna Paula</b><span>Identidade visual</span></div></a></li>
+  <li class="card" data-cat="identidade web"><a class="vidro" style="--tom:#DA9313" href="projeto-beeh-design.html"><div class="img"><img src="img/beeh-capa.jpg" alt="" loading="lazy"></div><div><b>Beeh Design</b><span>Identidade visual · Web design</span></div></a></li>
+  <li class="card" data-cat="identidade web"><a class="vidro" style="--tom:#660033" href="projeto-gil-confeitaria.html"><div class="img" style="background:#321622"><img src="img/gil-capa.jpg" alt="" loading="lazy"></div><div><b>GiL Confeitaria</b><span>Identidade visual · Web design</span></div></a></li>
+  <li class="card" data-cat="identidade"><a class="vidro" style="--tom:#5f8fd0" href="projeto-anna-paula.html"><div class="img"><img src="img/anna-hero.jpg" alt="" loading="lazy"></div><div><b>Anna Paula</b><span>Identidade visual</span></div></a></li>
   <li class="card" data-cat="identidade"><a class="vidro" style="--tom:#7a1414" href="projeto-noa.html"><div class="img" style="background:#460808"><img src="img/noa2-capa.jpg" alt="" loading="lazy"></div><div><b>Noá Confeitaria</b><span>Identidade visual</span></div></a></li>
   <li class="card" data-cat="identidade"><a class="vidro" style="--tom:#046161" href="projeto-ricardo-teston.html"><div class="img" style="background:#046161"><img src="img/rt-logo.jpg" alt="" loading="lazy"></div><div><b>Ricardo Teston</b><span>Identidade visual</span></div></a></li>
   <li class="card" data-cat="identidade"><a class="vidro" style="--tom:#7d7d7d" href="projeto-fabio-martinez.html"><div class="img" style="background:#bbbbbb"><img src="img/fabio-logo.jpg" alt="" loading="lazy"></div><div><b>Fabio Martinez</b><span>Identidade visual</span></div></a></li>
@@ -215,8 +215,7 @@ let pend=0;const checa=()=>{cancelAnimationFrame(pend);pend=requestAnimationFram
 addEventListener('scroll',checa,{passive:true});addEventListener('resize',checa);addEventListener('load',checa);checa()})();
 </script>
 <script>document.querySelectorAll('.wa-top').forEach(a=>{const w=document.getElementById('wa');a.href=(w&&w.href)||'https://wa.me/5514996185488?text='+encodeURIComponent('Olá, Henrique! Vim pelo site da Beeh Design.')});</script>
-   <script src="js/topo.js"></script>
-   <script src="js/topo.js"></script>
+<script src="js/topo.js"></script>
 <script src="js/menu.js"></script>
 </body>
 </html>
