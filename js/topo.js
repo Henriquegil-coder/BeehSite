@@ -1,7 +1,13 @@
 /* Botão "Voltar ao topo" · Beeh Design
    Computador: botão de vidro fixo no canto inferior esquerdo, aparece depois de rolar a página.
-   Celular (até 760 px): botão no fim da página, sem ficar por cima de nenhum texto. */
+   Celular (até 760 px): botão no fim da página, sem ficar por cima de nenhum texto.
+   Não aparece na página inicial e nunca é criado duas vezes, mesmo que o script seja chamado duas vezes. */
 (() => {
+  const pagina = (location.pathname.split('/').pop() || 'index').replace(/\.html$/, '') || 'index';
+  if (pagina === 'index') return;
+  if (window.__beehTopo || document.querySelector('.topo-flutua, .topo-fim')) return;
+  window.__beehTopo = true;
+
   const ICONE = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V5M6 11l6-6 6 6"/></svg>';
 
   const css = document.createElement('style');
